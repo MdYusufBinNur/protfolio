@@ -1,8 +1,10 @@
 <template>
     <div>
-        <div class="preloader-area">
-            <div class="loader-box">
-                <div class="loader"></div>
+        <div v-if="loading === true">
+            <div class="preloader-area">
+                <div class="loader-box">
+                    <div class="loader"></div>
+                </div>
             </div>
         </div>
         <!-- start banner Area -->
@@ -227,10 +229,14 @@
             </div>
         </section>
         <!-- End Contact Area -->
+
+
+
     </div>
 </template>
 
 <script>
+    $(".preloader-area").delay(200).fadeOut(500);
     export default {
         data(){
             return {
@@ -241,24 +247,40 @@
                 about_image:'',
                 projects: {},
                 jobs: {},
+                loading: true,
             }
         },
         methods:
             {
                 loadAbout()
                 {
-                    axios.get('api/web').then(({data})=>([
-                        this.about_title = data.about.title,
-                        this.about_description = data.about.description,
-                        this.about_image = data.about.image,
-                        this.categories = data.categories,
-                        this.jobs = data.jobs,
-                        this.$Progress.finish()
-                    ]))
+                    // axios.get('api/web').then(({data})=>([
+                    //     this.about_title = data.about.title,
+                    //     this.about_description = data.about.description,
+                    //     this.about_image = data.about.image,
+                    //     this.categories = data.categories,
+                    //     this.jobs = data.jobs,
+                    //     this.$Progress.finish(),
+                    // ]))
+                    axios.get('api/web').then(({data}) =>
+                    {
+                        if (data) {
+                            this.about_title = data.about.title,
+                                this.about_description = data.about.description,
+                                this.about_image = data.about.image,
+                                this.categories = data.categories,
+                                this.jobs = data.jobs,
+                                this.$Progress.finish(),
+                                this.loading = false;
+                        } else {
+                            this.message = 'No logs to display';
+                            this.loading = false;
+                        }
+                    })
                 }
             },
         created() {
-            //$(".preloader-area").delay(200).fadeOut(500);
+
             this.$Progress.start();
             this.loadAbout();
         }
